@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contador Km — Baixe para Android</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0f1720;
+    --bg-panel: #161f2b;
+    --bg-panel-2: #1b2531;
+    --line: #263344;
+    --blue: #1e88e5;
+    --blue-dim: #2c5f8a;
+    --amber: #ffb020;
+    --amber-dim: #7a5410;
+    --text: #edf1f5;
+    --text-muted: #8fa0b3;
+    --text-faint: #5b6b7d;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .display {
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.01em;
+  }
+
+  .mono {
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  a { color: inherit; }
+
+  /* ---------- background texture: faint dashboard grid ---------- */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  /* ---------- nav ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 24px 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-mark { width: 30px; height: 30px; flex-shrink: 0; }
+
+  .brand-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 28px;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--amber); }
+
+  /* ---------- hero ---------- */
+  .hero {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 64px 24px 40px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 32px;
+  }
+
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; text-align: center; padding-top: 40px; }
+    .hero-copy { order: 2; }
+    .hero-gauge { order: 1; }
+    nav { display: none; }
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--blue);
+    background: rgba(30,136,229,0.1);
+    border: 1px solid rgba(30,136,229,0.35);
+    padding: 6px 12px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 8px var(--amber);
+  }
+
+  .hero h1 {
+    font-size: 64px;
+    line-height: 0.98;
+    font-weight: 700;
+    margin: 0 0 18px;
+  }
+
+  @media (max-width: 480px) { .hero h1 { font-size: 46px; } }
+
+  .hero p.tagline {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 42ch;
+    margin: 0 0 32px;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 820px) { .hero p.tagline { margin-left: auto; margin-right: auto; } }
+
+  .cta-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  @media (max-width: 820px) { .cta-row { align-items: center; } }
+
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--amber);
+    color: #241a02;
+    font-weight: 700;
+    font-size: 17px;
+    text-decoration: none;
+    padding: 16px 26px;
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 10px 30px -10px rgba(255,176,32,0.55);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-download:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 14px 34px -10px rgba(255,176,32,0.7); }
+  .btn-download svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .btn-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+  }
+
+  .os-note {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+  .os-note strong { color: var(--text-muted); font-weight: 600; }
+
+  /* ---------- gauge ---------- */
+  .hero-gauge {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gauge-wrap {
+    position: relative;
+    width: min(320px, 78vw);
+    aspect-ratio: 1;
+  }
+
+  .gauge-wrap svg { width: 100%; height: 100%; overflow: visible; }
+
+  .gauge-ring-bg { stroke: var(--line); }
+  .gauge-ring-fg {
+    stroke: var(--blue);
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px rgba(30,136,229,0.55));
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    animation: sweep 1.4s cubic-bezier(.2,.8,.2,1) 0.3s forwards;
+  }
+  @keyframes sweep { to { stroke-dashoffset: 40; } }
+
+  .gauge-tick { stroke: var(--text-faint); stroke-width: 2; }
+
+  .gauge-needle {
+    transform-origin: 100px 100px;
+    transform: rotate(-125deg);
+    animation: needle-in 1.5s cubic-bezier(.2,.9,.25,1.2) 0.35s forwards;
+  }
+  @keyframes needle-in {
+    0%   { transform: rotate(-125deg); }
+    70%  { transform: rotate(52deg); }
+    100% { transform: rotate(38deg); }
+  }
+
+  .gauge-hub { fill: var(--blue); }
+
+  .gauge-readout {
+    position: absolute;
+    left: 50%; bottom: 14%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+  .gauge-readout .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ---------- spec strip ---------- */
+  .spec-strip {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-panel);
+  }
+  .spec-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    justify-content: center;
+  }
+  .spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 130px;
+  }
+  .spec-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+  .spec-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* ---------- sections ---------- */
+  section { max-width: 1080px; margin: 0 auto; padding: 84px 24px; }
+  @media (max-width: 600px) { section { padding: 56px 20px; } }
+
+  .section-head { text-align: center; margin-bottom: 48px; }
+  .section-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .section-head h2 {
+    font-size: 34px;
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+  .section-head p {
+    color: var(--text-muted);
+    max-width: 52ch;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* steps */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    counter-reset: step;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 20px;
+    padding: 26px 0;
+    border-top: 1px solid var(--line);
+  }
+  .step:last-child { border-bottom: 1px solid var(--line); }
+
+  .step-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--amber);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--amber-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,176,32,0.06);
+  }
+
+  .step h3 {
+    margin: 6px 0 8px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .step p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .step p code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--line);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .callout {
+    margin-top: 28px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--blue);
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .callout strong { color: var(--text); }
+
+ 
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px 24px 40px;
+    text-align: center;
+  }
+  footer p {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+    margin: 0;
+  }
+</style>
+</head>
+<body class="grid-bg">
+
+  <header>
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="48" fill="#1e88e5"/>
+        <path d="M50 78 A28 28 0 1 1 78 50" stroke="white" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <line x1="50" y1="50" x2="66" y2="34" stroke="white" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="50" cy="50" r="7" fill="white"/>
+      </svg>
+      <span class="brand-name display">Contador Km</span>
+    </div>
+    <nav>
+      <a href="#instalar">Como instalar</a>
+      <a href="#download">Download</a>
+    </nav>
+  </header>
+
+  <section class="hero" style="padding-top:56px;">
+    <div class="hero-copy">
+      <div class="eyebrow"><span class="dot"></span> APLICATIVO ANDROID</div>
+      <h1 class="display">Quilometragem <br>sempre no<br>controle.</h1>
+      <p class="tagline">O Contador Km registra os quilômetros do seu veículo por GPS ou digitado e avisa quando chega a hora de trocar o óleo.</p>
+
+      <div class="cta-row">
+        <a class="btn-download" id="download-link" href="https://drive.google.com/file/d/1W94ByYNvfx609qV6Ca1xGve9B82pX8rv/view?usp=drive_link" download>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16" stroke="#241a02" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Baixar para Android
+        </a>
+        <span class="btn-sub">ARQUIVO .APK · GRATUITO</span>
+        <div class="os-note">Disponível apenas para <strong>Android</strong>.</div>
+       
+      </div>
+    </div>
+
+    <div class="hero-gauge">
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 200">
+          <circle class="gauge-ring-bg" cx="100" cy="100" r="80" stroke-width="10" fill="none"/>
+          <circle class="gauge-ring-fg" cx="100" cy="100" r="80" stroke-width="10" fill="none"
+                  pathLength="100" stroke-dasharray="80" transform="rotate(-215 100 100)"/>
+          <g class="gauge-tick">
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-125 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-83 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-41 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(1 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(43 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(85 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(127 100 100)"/>
+          </g>
+          <g class="gauge-needle">
+            <line x1="100" y1="100" x2="100" y2="34" stroke="#ffb020" stroke-width="4" stroke-linecap="round"/>
+          </g>
+          <circle class="gauge-hub" cx="100" cy="100" r="9"/>
+        </svg>
+        
+     
+    
+  </section>
+
+  <div class="spec-strip">
+    <div class="spec-inner">
+      <div class="spec-item">
+        <span class="spec-label">Plataforma</span>
+        <span class="spec-value">Android 7.0 ou superior</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Rastreio</span>
+        <span class="spec-value">GPS em tempo real + manual</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Veículos</span>
+        <span class="spec-value">Carro e moto</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Requer</span>
+        <span class="spec-value">Localização e notificações</span>
+      </div>
+      <div class="spec-item">
+        <span class="spec-label">Distribuição</span>
+        <span class="spec-value">Fora da Play Store (.apk)</span>
+      </div>
+    </div>
+  </div>
+
+  <section id="instalar">
+    <div class="section-head">
+      <div class="section-eyebrow">Passo a passo</div>
+      <h2 class="display">Como instalar no seu Android</h2>
+      <p>Como o app não está na Play Store, o Android bloqueia a instalação por padrão até você liberar a permissão manualmente. É rápido — segue o passo a passo:</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num mono">01</div>
+        <div>
+          <h3>Baixe o arquivo .apk</h3>
+          <p>Toque no botão <strong>"Baixar para Android"</strong> no topo da página, de preferência usando o navegador do próprio celular (Chrome, por exemplo).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num mono">02</div>
+        <div>
+          <h3>Abra o arquivo baixado</h3>
+          <p>Vá nas notificações ou na pasta <code>Downloads</code> do celular e toque no arquivo <code>ContadorKm.apk</code> para abrir.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num mono">03</div>
+        <div>
+          <h3>Libere "instalar apps desconhecidos"</h3>
+          <p>O Android vai avisar que esse tipo de instalação está bloqueada. Toque em <strong>"Configurações"</strong> nesse aviso (ou vá em <code>Ajustes → Apps → Acesso especial → Instalar apps desconhecidos</code>) e ative a permissão para o app que você usou pra abrir o arquivo (Chrome, Arquivos, Downloads).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num mono">04</div>
+        <div>
+          <h3>Volte e instale</h3>
+          <p>Toque no arquivo <code>.apk</code> de novo. Agora a tela normal de instalação aparece — toque em <strong>"Instalar"</strong>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num mono">05</div>
+        <div>
+          <h3>Aviso do Play Protect (normal)</h3>
+          <p>Pode aparecer um aviso dizendo que o Google não reconhece o app. Isso é esperado para qualquer app fora da Play Store — toque em <strong>"Instalar mesmo assim"</strong>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num mono">06</div>
+        <div>
+          <h3>Pronto</h3>
+          <p>Abra o ContadorKm e comece a registrar seus km.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Em aparelhos mais antigos (Android 7.0 ou 7.1):</strong> a permissão fica em um lugar diferente — <code>Ajustes → Segurança → Fontes desconhecidas</code> — e é um único interruptor geral, em vez de por aplicativo.
+    </div>
+  </section>
+
+  <section id="download" style="text-align:center; padding-top:20px;">
+    <h2 class="display" style="font-size:30px; margin-bottom:14px;">Pronto pra começar?</h2>
+    <p style="color:var(--text-muted); margin-bottom:28px;">Baixe o app e siga o passo a passo acima na primeira instalação.</p>
+    <a class="btn-download" href="https://drive.google.com/file/d/1W94ByYNvfx609qV6Ca1xGve9B82pX8rv/view?usp=drive_link" download>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16" stroke="#241a02" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Baixar Contador Km
+    </a>
+  </section>
+
+  <footer>
+    <p>CONTADOR KM — CONTADOR DE QUILOMETRAGEM PARA ANDROID</p>
+  </footer>
+
+</body>
+</html>
